@@ -1,13 +1,125 @@
-body {
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Center form vertically */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.header-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
+  height: 60px;
+}
+
+.form-container {
+  padding-top: 80px;
+  margin: auto;
+}
+
+.form-container ol {
+  list-style-type: none;
+  width: 130%;
+}
+
+.form-container ol li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  margin: 0px 0;
+}
+
+label {
+  flex: 1;
+  text-align: left;
+  padding-right: 20px;
+  white-space: nowrap;
+}
+
+input, select {
+  flex: 2;
+  padding: 8px;
+  width: 100%;
+  border: 2px solid #ccc;
+  outline: none;
+  border-radius: 8px;
+  /* transition:  border 0.3s; */
+}
+
+input:focus, select:focus {
+  border-color: gray;
+  box-shadow: 0 0 5px rgba(128, 128, 128, 0.5);
+
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 20px 0;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  
+}
+button {
+  background-color: rgb(126, 22, 167);
+  color: white;
+  padding: 8px 20px;
+  font-size: 17px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+
+}
+button:hover {
+  background-color: rgb(90, 3, 124);
+  transition: 0.2s;
+  color: antiquewhite;
+}
+
+@media (max-width: 640px) {
+  .form-container ol li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  label {
+    padding-right: 0;
+    margin-bottom: 5px;
+  }
+  .form-container ol {
+    width: 100%;
+  }
 }
