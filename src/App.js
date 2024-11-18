@@ -1,57 +1,54 @@
-import React, { useState } from 'react';
-import Header from './Header';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Header from './Header'
 import Content from './Content';
-import './App.css';
 
-function App() {
-  const [unit, setUnit] = useState('');
-  const [costPrice, setCostPrice] = useState('');
-  const [sellingPrice, setSellingPrice] = useState('');
-  const [gstAmount, setGstAmount] = useState('');
-  const [mrp, setMrp] = useState('');
+
+const App = () => {
   const [productCode, setProductCode] = useState('');
   const [productName, setProductName] = useState('');
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
+  const [unit, setUnit] = useState(1);
   const [hsn, setHsn] = useState('');
+  const [costPrice, setCostPrice] = useState('');
+  const [sellingPrice, setSellingPrice] = useState(0);
+  const [gstAmount, setGstAmount] = useState(0);
+  const [mrp, setMrp] = useState(0);
+  const [products, setProducts] = useState([]);
 
-  const gstRate = 18;
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  const handleProductCodeChange = (e) => setProductCode(e.target.value);
-  const handleProductNameChange = (e) => setProductName(e.target.value);
-  const handleCategoryChange = (e) => setCategory(e.target.value);
-  const handleSubCategoryChange = (e) => setSubCategory(e.target.value);
-  const handleHsnChange = (e) => setHsn(e.target.value);
+  useEffect(() => {
+    const cost = parseFloat(costPrice) || 0;
+    const units = parseInt(unit, 10) || 1;
+    calculatePricing(cost, units);
+  }, [costPrice, unit]);
 
-  const handleUnitChange = (e) => {
-    const newUnit = parseFloat(e.target.value) || 1;
-    setUnit(newUnit);
-    calculateSellingPrice(newUnit, costPrice);
+  const calculatePricing = (cost, unit) => {
+    const selling = cost * unit || 0;
+    const gst = selling * 0.18 || 0;
+    const mrpValue = selling + gst;
+
+    setSellingPrice(selling.toFixed(2));
+    setGstAmount(gst.toFixed(2));
+    setMrp(mrpValue.toFixed(2));
   };
 
-  const handleCostPriceChange = (e) => {
-    const price = parseFloat(e.target.value) || 0;
-    setCostPrice(price);
-    calculateSellingPrice(unit, price);
-  };
-
-  const calculateSellingPrice = (unit, price) => {
-    const calculatedSellingPrice = unit * price;
-    setSellingPrice(calculatedSellingPrice);
-    calculateGstAndMrp(calculatedSellingPrice, gstRate);
-  };
-
-  const calculateGstAndMrp = (price, rate) => {
-    const gstValue = (price * rate) / 100;
-    setGstAmount(gstValue);
-    const calculatedMrp = price + gstValue;
-    setMrp(Math.round(calculatedMrp));
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/products');
+      setProducts(response.data.products || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const productData = {
+    const payload = {
       productCode,
       productName,
       category,
@@ -61,62 +58,78 @@ function App() {
       costPrice,
       sellingPrice,
       gstAmount,
-      mrp
+      mrp,
     };
 
     try {
-      const response = await fetch('http://localhost/task_01/save_product.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productData),
-      });
-      
-      const result = await response.json();
-      alert(result.message);
-      if (result.status === "success") resetForm();
+      const response = await axios.post('http://localhost:3001/save-product', payload);
+      if (response.data.status === 'success') {
+        alert(response.data.message);
+        fetchProducts();
+        clearForm();
+      } else {
+        alert(response.data.message || 'Failed to save product');
+      }
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.error('Error saving product:', error);
     }
   };
 
-  const resetForm = () => {
-    setUnit('');
-    setCostPrice('');
-    setSellingPrice('');
-    setGstAmount('');
-    setMrp('');
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.post('http://localhost:3001/delete-product', { id });
+      if (response.data.status === 'success') {
+        alert(response.data.message);
+        fetchProducts();
+      } else {
+        alert(response.data.message || 'Failed to delete product');
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
+
+  const clearForm = () => {
     setProductCode('');
     setProductName('');
     setCategory('');
     setSubCategory('');
+    setUnit(1);
     setHsn('');
+    setCostPrice('');
+    setSellingPrice(0);
+    setGstAmount(0);
+    setMrp(0);
   };
 
   return (
-    <div className="App">
+    <div>
       <Header />
+      {/* <h1>Product Management</h1> */}
       <Content
+        productCode={productCode}
+        onProductCodeChange={(e) => setProductCode(e.target.value)}
+        productName={productName}
+        onProductNameChange={(e) => setProductName(e.target.value)}
+        category={category}
+        onCategoryChange={(e) => setCategory(e.target.value)}
+        subCategory={subCategory}
+        onSubCategoryChange={(e) => setSubCategory(e.target.value)}
         unit={unit}
-        onUnitChange={handleUnitChange}
+        onUnitChange={(e) => setUnit(e.target.value)}
+        hsn={hsn}
+        onHsnChange={(e) => setHsn(e.target.value)}
         costPrice={costPrice}
-        onCostPriceChange={handleCostPriceChange}
+        onCostPriceChange={(e) => setCostPrice(e.target.value)}
         sellingPrice={sellingPrice}
         gstAmount={gstAmount}
         mrp={mrp}
-        productCode={productCode}
-        onProductCodeChange={handleProductCodeChange}
-        productName={productName}
-        onProductNameChange={handleProductNameChange}
-        category={category}
-        onCategoryChange={handleCategoryChange}
-        subCategory={subCategory}
-        onSubCategoryChange={handleSubCategoryChange}
-        hsn={hsn}
-        onHsnChange={handleHsnChange}
-        handleSubmit={handleSubmit}
+        onSubmit={handleSubmit}
+        onDelete={handleDelete}
+        products={products}
       />
     </div>
   );
-}
+};
 
 export default App;
