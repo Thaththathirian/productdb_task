@@ -1,4 +1,5 @@
 import React from 'react';
+import PaginatedTable from './PaginatedTable'
 
 const Content = ({
   unit, onUnitChange,
@@ -15,12 +16,14 @@ const Content = ({
   hsn, 
   onHsnChange,
   onSubmit,
+  onEdit,
   onDelete,
   products,
 }) => {
   return (
     <>
       <form onSubmit={onSubmit}>
+
         <div className="form-container">
           <ol>
             <li>
@@ -86,55 +89,14 @@ const Content = ({
           <button type="submit">Submit</button>
         </div>
       </form>
+
       <div className='table-content' >
         <h2>Submitted Products :</h2>
-        <div className="product-table">
-        <table border="1" className='table-container'>
-          <thead>
-            <tr>
-              <th>Product Code</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Sub Category</th>
-              <th>Unit</th>
-              <th>HSN</th>
-              <th>Cost Price</th>
-              <th>Selling Price</th>
-              <th>GST</th>
-              <th>MRP</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products && products.length > 0 ? (
-              products.map((product, index) => (
-                <tr key={index}>
-                  <td>{product.product_code}</td>
-                  <td>{product.product_name}</td>
-                  <td>{product.category}</td>
-                  <td>{product.sub_category}</td>
-                  <td>{product.unit}</td>
-                  <td>{product.hsn}</td>
-                  <td>{product.cost_price}</td>
-                  <td>{product.selling_price}</td>
-                  <td>{product.gst_amount}</td>
-                  <td>{product.mrp}</td>
-                  <td>
-                    <button className='delete-btn' onClick={() => onDelete(product.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="11">No products available</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        </div>
+        <PaginatedTable products={products} onEdit={onEdit} onDelete={onDelete}/>
       </div>
     </>
   );
 };
 
 export default Content;
+
